@@ -24,7 +24,7 @@ var AllDirs [8]Dir = [8]Dir{
 	{-1, -1},
 }
 
-func traverse(lines [][]byte, i, j, r, c, depth int, dir Dir) int {
+func searchDir(lines [][]byte, i, j, r, c, depth int, dir Dir) int {
 	if depth == len(target) {
 		return 0
 	}
@@ -38,20 +38,19 @@ func traverse(lines [][]byte, i, j, r, c, depth int, dir Dir) int {
 		return 1
 	}
 
-	sum := 0
-	if dir.i == 0 && dir.j == 0 {
-		for _, dir := range AllDirs {
-			sum += traverse(lines, i+dir.i, j+dir.j, r, c, depth+1, dir)
-		}
-	} else {
-		sum += traverse(lines, i+dir.i, j+dir.j, r, c, depth+1, dir)
-	}
-
-	return sum
+	return searchDir(lines, i+dir.i, j+dir.j, r, c, depth+1, dir)
 }
 
 func search(lines [][]byte, i, j, r, c int) int {
-	return traverse(lines, i, j, r, c, 0, Dir{})
+	if lines[i][j] != target[0] {
+		return 0
+	}
+
+	sum := 0
+	for _, dir := range AllDirs {
+		sum += searchDir(lines, i+dir.i, j+dir.j, r, c, 1, dir)
+	}
+	return sum
 }
 
 func doPartTwo(lines [][]byte, r, c int) int {
