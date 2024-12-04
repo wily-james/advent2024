@@ -38,10 +38,7 @@ func traverse(lines [][]byte, i, j, r, c, depth int, dir Dir) int {
 		return 1
 	}
 
-	saved := lines[i][j]
-	lines[i][j] = '\n'
 	sum := 0
-
 	if dir.i == 0 && dir.j == 0 {
 		for _, dir := range AllDirs {
 			sum += traverse(lines, i+dir.i, j+dir.j, r, c, depth+1, dir)
@@ -50,7 +47,6 @@ func traverse(lines [][]byte, i, j, r, c, depth int, dir Dir) int {
 		sum += traverse(lines, i+dir.i, j+dir.j, r, c, depth+1, dir)
 	}
 
-	lines[i][j] = saved
 	return sum
 }
 
