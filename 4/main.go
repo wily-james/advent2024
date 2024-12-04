@@ -8,19 +8,21 @@ import (
 
 const target string = "XMAS"
 
-type Dir int
+type Dir struct {
+	i int
+	j int
+}
 
-const (
-	Search Dir = iota
-	Up
-	Down
-	Left
-	Right
-	UpRight
-	UpLeft
-	DownRight
-	DownLeft
-)
+var AllDirs [8]Dir = [8]Dir{
+	{0, 1},
+	{0, -1},
+	{1, 0},
+	{1, 1},
+	{1, -1},
+	{-1, 0},
+	{-1, 1},
+	{-1, -1},
+}
 
 func traverse(lines [][]byte, i, j, r, c, depth int, dir Dir) int {
 	if depth == len(target) {
@@ -40,47 +42,20 @@ func traverse(lines [][]byte, i, j, r, c, depth int, dir Dir) int {
 	lines[i][j] = '\n'
 	sum := 0
 
-	switch dir {
-	case Search:
-		sum += traverse(lines, i+1, j, r, c, depth+1, Up)
-		sum += traverse(lines, i-1, j, r, c, depth+1, Down)
-		sum += traverse(lines, i+1, j+1, r, c, depth+1, Left)
-		sum += traverse(lines, i-1, j-1, r, c, depth+1, Right)
-		sum += traverse(lines, i+1, j-1, r, c, depth+1, UpRight)
-		sum += traverse(lines, i-1, j+1, r, c, depth+1, UpLeft)
-		sum += traverse(lines, i, j+1, r, c, depth+1, DownRight)
-		sum += traverse(lines, i, j-1, r, c, depth+1, DownLeft)
-
-	case Up:
-		sum += traverse(lines, i+1, j, r, c, depth+1, Up)
-
-	case Down:
-		sum += traverse(lines, i-1, j, r, c, depth+1, Down)
-
-	case Left:
-		sum += traverse(lines, i+1, j+1, r, c, depth+1, Left)
-
-	case Right:
-		sum += traverse(lines, i-1, j-1, r, c, depth+1, Right)
-
-	case UpRight:
-		sum += traverse(lines, i+1, j-1, r, c, depth+1, UpRight)
-
-	case UpLeft:
-		sum += traverse(lines, i-1, j+1, r, c, depth+1, UpLeft)
-
-	case DownRight:
-		sum += traverse(lines, i, j+1, r, c, depth+1, DownRight)
-
-	case DownLeft:
-		sum += traverse(lines, i, j-1, r, c, depth+1, DownLeft)
+	if dir.i == 0 && dir.j == 0 {
+		for _, dir := range AllDirs {
+			sum += traverse(lines, i+dir.i, j+dir.j, r, c, depth+1, dir)
+		}
+	} else {
+		sum += traverse(lines, i+dir.i, j+dir.j, r, c, depth+1, dir)
 	}
+
 	lines[i][j] = saved
 	return sum
 }
 
 func search(lines [][]byte, i, j, r, c int) int {
-	return traverse(lines, i, j, r, c, 0, Search)
+	return traverse(lines, i, j, r, c, 0, Dir{})
 }
 
 func doPartTwo(lines [][]byte, r, c int) int {
