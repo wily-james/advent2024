@@ -77,18 +77,38 @@ func main() {
 func countObstructionPoints(lines [][]byte, iter Iter) int {
 	r, c := len(lines), len(lines[0])
 
-	count := 0
+	seen := make([][]bool, r)
 	for i := range r {
-		for j := range c {
-			if lines[i][j] != '.' {
-				continue
-			}
+		seen[i] = make([]bool, c)
+	}
 
-			lines[i][j] = '#'
-			if isCyclic(iter) {
-				count += 1
+	count := 0
+	for {
+		dir := dirs[iter.dir]
+		ni, nj := iter.i+dir[0], iter.j+dir[1]
+		if ni < 0 || ni >= r || nj < 0 || nj >= c {
+			if !iter.Next() {
+				break
 			}
-			lines[i][j] = '.'
+			continue
+		}
+
+		if lines[ni][nj] != '.' || seen[ni][nj] {
+			if !iter.Next() {
+				break
+			}
+			continue
+		}
+		seen[ni][nj] = true
+
+		lines[ni][nj] = '#'
+		if isCyclic(iter) {
+			count += 1
+		}
+		lines[ni][nj] = '.'
+
+		if !iter.Next() {
+			break
 		}
 	}
 
